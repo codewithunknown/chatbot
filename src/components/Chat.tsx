@@ -132,7 +132,7 @@ const Chat = (props: any) => {
         apiKey: apiKey || defaultApiKey,
       } as GeminiHandler;
 
-      debugger;
+
       geminiHandler.hasImages = !!(geminiHandler.historyMessages.filter(x => x.image).length || geminiHandler.message.image);
       setSelectedModel(geminiHandler.hasImages ? GEMINI_PRO_VISION_MODEL : GEMINI_PRO_MODEL);
 
