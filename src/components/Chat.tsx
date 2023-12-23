@@ -25,16 +25,17 @@ const Chat = (props: any) => {
   const textAreaRef = useAutoResizeTextArea();
   const bottomOfChatRef = useRef<HTMLDivElement>(null);
 
-  const [avaliableModels] = useState(GEMINI_MODELS.filter(x => x.available));
-  const [selectedModel, setSelectedModel] = useState(GEMINI_PRO_MODEL);
+  // const [avaliableModels] = useState(GEMINI_MODELS.filter(x => x.available));
+  const [selectedModel, setSelectedModel] = useState(GEMINI_PRO_VISION_MODEL);
   const [base64Images, setBase64Images] = useState<Image64[]>([]);
-  const [inputImages, setInputImages] = useState<any[]>([]);
+  const [objectURLImages, setObjectURLImages] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (typeof startCommand == 'string') {
       sendMessage(null, "command").then();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -87,7 +88,7 @@ const Chat = (props: any) => {
       }
 
       setBase64Images(images);
-      setInputImages(inputImages);
+      setObjectURLImages(inputImages);
     }
   };
 
@@ -122,7 +123,7 @@ const Chat = (props: any) => {
 
     setMessage("");
     setShowEmptyChat(false);
-    setInputImages([]);
+    setObjectURLImages([]);
 
     try {
       const geminiHandler = {
@@ -212,10 +213,10 @@ const Chat = (props: any) => {
             <div className="react-scroll-to-bottom--css-ikyem-1n7m0yu">
               {!showEmptyChat && conversation.length > 0 ? (
                 <div className="flex flex-col items-center text-sm bg-gray-800">
-                  <div
+                  {/* <div
                     className="flex w-full items-center justify-center gap-1 border-b border-black/10 bg-gray-50 p-3 text-gray-300 border-gray-900/50 bg-gray-700 text-gray-100">
                     Model: {selectedModel.name}
-                  </div>
+                  </div> */}
                   {conversation.filter(x => x.type != "command" && x.role).map((message, index: number) => (
                     <Message
                       key={index}
@@ -232,7 +233,7 @@ const Chat = (props: any) => {
               ) : null}
               {showEmptyChat ? (
                 <div className="py-10 relative w-full flex flex-col h-full">
-                  <div className="flex items-center justify-center gap-2">
+                  {/* <div className="flex items-center justify-center gap-2">
                     <div className="relative w-full md:w-1/2 lg:w-1/3 xl:w-1/4">
                       <button
                         className="relative flex w-full cursor-default flex-col rounded-md border border-black/10 bg-transparent py-2 pl-3 pr-10 text-left focus:border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 border-white/20 bg-cyan-950 sm:text-sm align-center"
@@ -280,7 +281,7 @@ const Chat = (props: any) => {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </div> */}
                   <h1 className="text-2xl drop-shadow-xl shadow-white sm:text-4xl font-semibold text-center text-gray-200 text-white flex gap-2 items-center justify-center h-screen animate-pulse">
                     Gemini
                   </h1>
@@ -319,9 +320,9 @@ const Chat = (props: any) => {
                     onKeyDown={handleKeypress}
                   ></textarea>
                   <div style={{ display: "flex" }}>
-                    {inputImages && inputImages.length > 0 && (
+                    {objectURLImages && objectURLImages.length > 0 && (
                       <div style={{ display: "flex" }}>
-                        {inputImages.map((image, index) => (
+                        {objectURLImages.map((image, index) => (
                           <Image
                             key={index}
                             src={image}
