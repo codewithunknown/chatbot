@@ -10,7 +10,7 @@ import gemini from "../services/gemini";
 import { tutorialTxt } from "@/utils/conversations/tutorialFirstAccess";
 import { Image64 } from "../types/Image";
 import { Conversation } from "@/types/Conversation";
-import { GeminiHandler } from "@/types/GeminiHandler";
+import { AIHandler } from "@/types/AIHandler";
 
 const Chat = (props: any) => {
   const { toggleComponentVisibility, I18nDictionary, apiKey, startCommand } = props;
@@ -131,7 +131,7 @@ const Chat = (props: any) => {
         message: { parts: message, role: "user", type: messageType },
         model: selectedModel,
         apiKey: apiKey || defaultApiKey,
-      } as GeminiHandler;
+      } as AIHandler;
 
 
       geminiHandler.hasImages = !!(geminiHandler.historyMessages.filter(x => x.image).length || geminiHandler.message.image);
