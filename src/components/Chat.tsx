@@ -76,19 +76,22 @@ const Chat = (props: any) => {
     });
   };
 
+  const insertImagemOnChat = async (files: any, convertImageToBase64: (image: any) => Promise<Image64>) => {
+    const images = [];
+    const inputImages = [];
+    for (const file of files) {
+      const base64 = await convertImageToBase64(file);
+      images.push(base64);
+      inputImages.push(URL.createObjectURL(file));
+    }
+
+    setBase64Images(images);
+    setObjectURLImages(inputImages);
+  }
 
   const handleChange = async (e: any) => {
     if (e.target.files && e.target.files[0]) {
-      const images = [];
-      const inputImages = [];
-      for (const file of e.target.files) {
-        const base64 = await convertImageToBase64(file);
-        images.push(base64);
-        inputImages.push(URL.createObjectURL(file));
-      }
-
-      setBase64Images(images);
-      setObjectURLImages(inputImages);
+      await insertImagemOnChat(e.target.files, convertImageToBase64);
     }
   };
 
@@ -170,14 +173,35 @@ const Chat = (props: any) => {
     setBase64Images([]);
   };
 
+  let lastKeyCode = 0;
+  const isCtrlVPressed = (lastKeyCode: number, currentKeyCode: any) => {
+    const ctrlKey = 17, cmdKey = 91, vKey = 86;
+    return (lastKeyCode == ctrlKey || lastKeyCode == cmdKey) && currentKeyCode == vKey;
+  }
+
+  const isEnterPressed = (e: any) => e.keyCode == 13 && !e.shiftKey;
+
   const handleKeypress = (e: any) => {
-    // It's triggers by pressing the enter key
-    if (e.keyCode == 13 && !e.shiftKey) {
+    if (isEnterPressed(e)) {
       sendMessage(e);
       e.preventDefault();
     }
+
+    if (isCtrlVPressed(lastKeyCode, e.keyCode)) {
+      console.log("ctrlKey pressed")
+      pasteImg(e);
+    }
+    lastKeyCode = e.keyCode;
   };
 
+  const pasteImg = async (e: any) => {
+    try {
+      const clipboardItems = await navigator.clipboard.read();
+      const blobOutput = await clipboardItems[0].getType('image/png');
+      await insertImagemOnChat([blobOutput], convertImageToBase64);
+      e.preventDefault();
+    } catch (error) { }
+  }
 
   const close = () => {
     setIsOpen(false);
