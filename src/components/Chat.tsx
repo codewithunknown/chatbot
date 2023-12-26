@@ -76,19 +76,22 @@ const Chat = (props: any) => {
     });
   };
 
+  const insertImagemOnChat = async (files: any, convertImageToBase64: (image: any) => Promise<Image64>) => {
+    const images = [];
+    const inputImages = [];
+    for (const file of files) {
+      const base64 = await convertImageToBase64(file);
+      images.push(base64);
+      inputImages.push(URL.createObjectURL(file));
+    }
+
+    setBase64Images(images);
+    setObjectURLImages(inputImages);
+  }
 
   const handleChange = async (e: any) => {
     if (e.target.files && e.target.files[0]) {
-      const images = [];
-      const inputImages = [];
-      for (const file of e.target.files) {
-        const base64 = await convertImageToBase64(file);
-        images.push(base64);
-        inputImages.push(URL.createObjectURL(file));
-      }
-
-      setBase64Images(images);
-      setObjectURLImages(inputImages);
+      await insertImagemOnChat(e.target.files, convertImageToBase64);
     }
   };
 
@@ -170,14 +173,19 @@ const Chat = (props: any) => {
     setBase64Images([]);
   };
 
+  const handlePaste = (e: any) => {
+    if (e.clipboardData && e.clipboardData.files.length) {
+      insertImagemOnChat(e.clipboardData.files, convertImageToBase64);
+    }
+  }
+
   const handleKeypress = (e: any) => {
-    // It's triggers by pressing the enter key
+    // enter keypress
     if (e.keyCode == 13 && !e.shiftKey) {
       sendMessage(e);
       e.preventDefault();
     }
   };
-
 
   const close = () => {
     setIsOpen(false);
@@ -318,6 +326,7 @@ const Chat = (props: any) => {
                     className="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 bg-transparent pl-2 md:pl-0"
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={handleKeypress}
+                    onPaste={handlePaste}
                   ></textarea>
                   <div style={{ display: "flex" }}>
                     {objectURLImages && objectURLImages.length > 0 && (
