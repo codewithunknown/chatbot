@@ -173,35 +173,19 @@ const Chat = (props: any) => {
     setBase64Images([]);
   };
 
-  let lastKeyCode = 0;
-  const isCtrlVPressed = (lastKeyCode: number, currentKeyCode: any) => {
-    const ctrlKey = 17, cmdKey = 91, vKey = 86;
-    return (lastKeyCode == ctrlKey || lastKeyCode == cmdKey) && currentKeyCode == vKey;
+  const handlePaste = (e: any) => {
+    if (e.clipboardData && e.clipboardData.files.length) {
+      insertImagemOnChat(e.clipboardData.files, convertImageToBase64);
+    }
   }
 
-  const isEnterPressed = (e: any) => e.keyCode == 13 && !e.shiftKey;
-
   const handleKeypress = (e: any) => {
-    if (isEnterPressed(e)) {
+    // enter keypress
+    if (e.keyCode == 13 && !e.shiftKey) {
       sendMessage(e);
       e.preventDefault();
     }
-
-    if (isCtrlVPressed(lastKeyCode, e.keyCode)) {
-      console.log("ctrlKey pressed")
-      pasteImg(e);
-    }
-    lastKeyCode = e.keyCode;
   };
-
-  const pasteImg = async (e: any) => {
-    try {
-      const clipboardItems = await navigator.clipboard.read();
-      const blobOutput = await clipboardItems[0].getType('image/png');
-      await insertImagemOnChat([blobOutput], convertImageToBase64);
-      e.preventDefault();
-    } catch (error) { }
-  }
 
   const close = () => {
     setIsOpen(false);
@@ -342,6 +326,7 @@ const Chat = (props: any) => {
                     className="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 bg-transparent pl-2 md:pl-0"
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={handleKeypress}
+                    onPaste={handlePaste}
                   ></textarea>
                   <div style={{ display: "flex" }}>
                     {objectURLImages && objectURLImages.length > 0 && (
