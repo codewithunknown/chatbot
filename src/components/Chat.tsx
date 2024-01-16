@@ -211,9 +211,9 @@ const Chat = (props: any) => {
           <RxHamburgerMenu className="h-6 w-6 text-white" />
         </button>
         <h1 className="flex-1 text-center text-base font-normal">{i18n.NEW_CHAT}</h1>
-        <button type="button" className="px-3">
+        {/* <button type="button" className="px-3">
           <BsPlusLg className="h-6 w-6" />
-        </button>
+        </button> */}
       </div>
       <div className="relative h-full w-full transition-width flex flex-col overflow-hidden items-stretch flex-1">
         <div className="flex-1 overflow-hidden">
