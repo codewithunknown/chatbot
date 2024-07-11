@@ -43,28 +43,11 @@ const Sidebar = (props: any) => {
           <AiOutlineSetting className="h-4 w-4" />
           Settings
         </a> */}
-        <a
-          href="https://makersuite.google.com/app/apikey"
-          target="_blank"
-          className="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm"
-        >
-          <BiLinkExternal className="h-4 w-4" />
-          {i18n.GET_API_KEY}
-        </a>
+       
         <input value={apiKey} type="password" onChange={handleInputChange} placeholder="Gemini API key" className="flex py-3 px-3 items-center gap-3 rounded-md duration-200 text-black cursor-pointer text-sm">
         </input>
-        {/* <a className="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm">
-          <MdLogout className="h-4 w-4" />
-          Log out
-        </a> */}
-        <a
-          href="https://github.com/WillianAgostini/chatbot-gemini"
-          target="_blank"
-          className="flex py-3 px-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer text-sm"
-        >
-          <FaGithub className="h-4 w-4" />
-          {i18n.START_ME_GITHUB}
-        </a>
+         
+         
       </nav>
     </div>
   );

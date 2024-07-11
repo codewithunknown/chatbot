@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { FiImage, FiSend } from "react-icons/fi";
-import { BsChevronDown, BsPlusLg } from "react-icons/bs";
 import { RxHamburgerMenu } from "react-icons/rx";
 import useAutoResizeTextArea from "@/hooks/useAutoResizeTextArea";
 import Message from "./Message";
-import { GEMINI_PRO_MODEL, GEMINI_PRO_VISION_MODEL, GEMINI_MODELS } from "@/shared/Constants";
+import {
+  GEMINI_PRO_MODEL,
+  GEMINI_PRO_VISION_MODEL,
+  GEMINI_MODELS,
+} from "@/shared/Constants";
 import Image from "next/image";
 import gemini from "../services/gemini";
 import { tutorialTxt } from "@/utils/conversations/tutorialFirstAccess";
@@ -13,7 +16,8 @@ import { Conversation } from "@/types/Conversation";
 import { AIHandler } from "@/types/AIHandler";
 
 const Chat = (props: any) => {
-  const { toggleComponentVisibility, I18nDictionary, apiKey, startCommand } = props;
+  const { toggleComponentVisibility, I18nDictionary, apiKey, startCommand } =
+    props;
   const i18n: I18nDictionary = I18nDictionary;
 
   const defaultApiKey = process.env.NEXT_PUBLIC_GEMINI_KEY;
@@ -21,7 +25,9 @@ const Chat = (props: any) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showEmptyChat, setShowEmptyChat] = useState(true);
   const [conversation, setConversation] = useState<Conversation[]>([]);
-  const [message, setMessage] = useState((typeof startCommand == 'string') ? startCommand : "");
+  const [message, setMessage] = useState(
+    typeof startCommand == "string" ? startCommand : ""
+  );
   const textAreaRef = useAutoResizeTextArea();
   const bottomOfChatRef = useRef<HTMLDivElement>(null);
 
@@ -32,11 +38,11 @@ const Chat = (props: any) => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof startCommand == 'string') {
+    if (typeof startCommand == "string") {
       sendMessage(null, "command").then();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (textAreaRef.current) {
@@ -51,7 +57,6 @@ const Chat = (props: any) => {
     }
   }, [conversation]);
 
-
   const getImageMimeType = (image: any): string => {
     const blob = image instanceof Blob ? image : new Blob([image]);
     const type = blob.type;
@@ -60,23 +65,28 @@ const Chat = (props: any) => {
 
   const convertImageToBase64 = (image: any): Promise<Image64> => {
     return new Promise((resolve) => {
-
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
-        const base64Image = e.target.result.replace(/^data:image\/[a-z]+;base64,/, '');
+        const base64Image = e.target.result.replace(
+          /^data:image\/[a-z]+;base64,/,
+          ""
+        );
         const mimeType = getImageMimeType(image);
         resolve({
           base64: base64Image,
-          mimeType
-        })
+          mimeType,
+        });
       };
 
       reader.readAsDataURL(image);
     });
   };
 
-  const insertImagemOnChat = async (files: any, convertImageToBase64: (image: any) => Promise<Image64>) => {
+  const insertImagemOnChat = async (
+    files: any,
+    convertImageToBase64: (image: any) => Promise<Image64>
+  ) => {
     const images = [];
     const inputImages = [];
     for (const file of files) {
@@ -87,7 +97,7 @@ const Chat = (props: any) => {
 
     setBase64Images(images);
     setObjectURLImages(inputImages);
-  }
+  };
 
   const handleChange = async (e: any) => {
     if (e.target.files && e.target.files[0]) {
@@ -113,7 +123,7 @@ const Chat = (props: any) => {
 
     setIsLoading(true);
 
-    const imagesChat = base64Images.map(image => {
+    const imagesChat = base64Images.map((image) => {
       return { image: image, role: "user" };
     });
     // Add the message to the conversation
@@ -136,9 +146,13 @@ const Chat = (props: any) => {
         apiKey: apiKey || defaultApiKey,
       } as AIHandler;
 
-
-      geminiHandler.hasImages = !!(geminiHandler.historyMessages.filter(x => x.image).length || geminiHandler.message.image);
-      setSelectedModel(geminiHandler.hasImages ? GEMINI_PRO_VISION_MODEL : GEMINI_PRO_MODEL);
+      geminiHandler.hasImages = !!(
+        geminiHandler.historyMessages.filter((x) => x.image).length ||
+        geminiHandler.message.image
+      );
+      setSelectedModel(
+        geminiHandler.hasImages ? GEMINI_PRO_VISION_MODEL : GEMINI_PRO_MODEL
+      );
 
       await gemini(geminiHandler, (text: string) => {
         setConversation([
@@ -147,7 +161,7 @@ const Chat = (props: any) => {
           ...imagesChat,
           { parts: text, role: "model" },
         ]);
-      })
+      });
 
       setIsLoading(false);
     } catch (error: any) {
@@ -177,27 +191,13 @@ const Chat = (props: any) => {
     if (e.clipboardData && e.clipboardData.files.length) {
       insertImagemOnChat(e.clipboardData.files, convertImageToBase64);
     }
-  }
-
-  const handleKeypress = (e: any) => {
-    // enter keypress
-    if (e.keyCode == 13 && !e.shiftKey) {
-      sendMessage(e);
-      e.preventDefault();
-    }
   };
 
-  const close = () => {
-    setIsOpen(false);
-  };
-
-  const onModelSelect = (model: any) => {
-    setSelectedModel(model);
-  }
+  
 
   const getLastIndexArray = (array: any, id: number): boolean => {
-    return array.length - 1 === id
-  }
+    return array.length - 1 === id;
+  };
 
   return (
     <div className="flex max-w-full flex-1 flex-col">
@@ -210,7 +210,9 @@ const Chat = (props: any) => {
           <span className="sr-only">Open sidebar</span>
           <RxHamburgerMenu className="h-6 w-6 text-white" />
         </button>
-        <h1 className="flex-1 text-center text-base font-normal">{i18n.NEW_CHAT}</h1>
+        <h1 className="flex-1 text-center text-base font-normal">
+          {i18n.NEW_CHAT}
+        </h1>
         {/* <button type="button" className="px-3">
           <BsPlusLg className="h-6 w-6" />
         </button> */}
@@ -225,16 +227,17 @@ const Chat = (props: any) => {
                     className="flex w-full items-center justify-center gap-1 border-b border-black/10 bg-gray-50 p-3 text-gray-300 border-gray-900/50 bg-gray-700 text-gray-100">
                     Model: {selectedModel.name}
                   </div> */}
-                  {conversation.filter(x => x.type != "command" && x.role).map((message, index: number) => (
-                    <Message
-                      key={index}
-                      id={index}
-                      message={message}
-                      isLoading={isLoading}
-                      isLast={getLastIndexArray(conversation, index)}
-                    />
-                  ))
-                  }
+                  {conversation
+                    .filter((x) => x.type != "command" && x.role)
+                    .map((message, index: number) => (
+                      <Message
+                        key={index}
+                        id={index}
+                        message={message}
+                        isLoading={isLoading}
+                        isLast={getLastIndexArray(conversation, index)}
+                      />
+                    ))}
                   <div ref={bottomOfChatRef}></div>
                   <div className="w-full h-32 md:h-48 flex-shrink-0 bg-sky-900"></div>
                 </div>
@@ -291,7 +294,7 @@ const Chat = (props: any) => {
                     </div>
                   </div> */}
                   <h1 className="text-2xl drop-shadow-xl shadow-white sm:text-4xl font-semibold text-center text-gray-200 text-white flex gap-2 items-center justify-center h-screen animate-pulse">
-                    Gemini
+                    Crop Disease Detection
                   </h1>
                 </div>
               ) : null}
@@ -299,7 +302,7 @@ const Chat = (props: any) => {
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 w-full border-t md:border-t-0 border-white/20 md:border-transparent md:border-transparent md:bg-vert-light-gradient bg-cyan-950 bg-cyan-950 md:!bg-transparent pt-2">
+        <div className="absolute bottom-0 w-full left-0 right-0 flex justify-center border-t md:border-t-0 border-white/20 md:border-transparent md:border-transparent md:bg-vert-light-gradient bg-cyan-950 bg-cyan-950 md:!bg-transparent pt-2">
           <form className="stretch mx-2 flex flex-row gap-3 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-2xl xl:max-w-3xl">
             <div className="relative flex flex-col h-full flex-1 items-stretch md:flex-col">
               {errorMessage ? (
@@ -309,25 +312,8 @@ const Chat = (props: any) => {
                   </div>
                 </div>
               ) : null}
-              <div className="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-white/10 bg-cyan-950 border-white/50 text-white bg-cyan-950 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-                <div className='flex justify-end'>
-                  <textarea
-                    ref={textAreaRef}
-                    value={message}
-                    tabIndex={0}
-                    data-id="root"
-                    style={{
-                      height: "24px",
-                      maxHeight: "200px",
-                      overflowY: "hidden",
-                    }}
-                    // rows={1}
-                    placeholder={i18n.SEND_MESSAGE}
-                    className="m-0 w-full resize-none border-0 bg-transparent p-0 pr-7 focus:ring-0 focus-visible:ring-0 bg-transparent pl-2 md:pl-0"
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={handleKeypress}
-                    onPaste={handlePaste}
-                  ></textarea>
+              <div className="flex flex-col py-2 flex-grow md:py-3 md:pl-4 relative border border-white/10 bg-cyan-950 border-white/50 text-white bg-cyan-950 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+                <div className="flex justify-end">
                   <div style={{ display: "flex" }}>
                     {objectURLImages && objectURLImages.length > 0 && (
                       <div style={{ display: "flex" }}>
@@ -336,7 +322,8 @@ const Chat = (props: any) => {
                             key={index}
                             src={image}
                             style={{ maxWidth: "150px", margin: "5px" }}
-                            width="300" height="500"
+                            width="300"
+                            height="500"
                             alt={`Preview ${index + 1}`}
                           />
                         ))}
@@ -344,34 +331,34 @@ const Chat = (props: any) => {
                     )}
                   </div>
                   <button
-                    disabled={isLoading || !(message?.length || base64Images?.length)}
+                    disabled={
+                      isLoading || !(message?.length || base64Images?.length)
+                    }
                     onClick={sendMessage}
-                    className="mr-1 p-1 rounded-md bg-transparent disabled:bg-gray-500 justify-self-end right-1 md:right-12 disabled:opacity-40">
+                    className="mr-1 p-1 rounded-md bg-transparent disabled:bg-gray-500 justify-self-end right-1 md:right-12 disabled:opacity-40"
+                  >
                     <FiSend className="h-4 w-4 mr-1 text-white " />
                   </button>
                   <input
                     type="file"
                     ref={fileInputRef}
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                     onChange={handleChange}
                     accept=".png, .jpg, .jpeg"
-                    multiple
+                    
                   />
                   <button
                     disabled={isLoading}
                     onClick={handleFileButtonClick}
-                    className="mr-1 p-1 rounded-md bg-transparent disabled:bg-gray-500 justify-self-end right-1 md:right-12 disabled:opacity-40">
+                    className="mr-1 p-1 rounded-md bg-transparent disabled:bg-gray-500 justify-self-end right-1 md:right-12 disabled:opacity-40"
+                  >
                     <FiImage className="h-4 w-4 mr-1 text-white " />
                   </button>
                 </div>
               </div>
             </div>
           </form>
-          <div className="px-3 pt-2 pb-3 text-center text-xs text-black/50 text-white/50 md:px-4 md:pt-3 md:pb-6">
-            <span>
-              {i18n.GEMINI_INFORMATION}
-            </span>
-          </div>
+          
         </div>
       </div>
     </div>
